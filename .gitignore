@@ -1,0 +1,11 @@
+*~
+target/
+.project
+.classpath
+.checkstyle
+.settings/
+.idea/
+.patch
+.vscode
+*.iml
+.DS_Store
