@@ -1,59 +1,25 @@
 package com.hazelcast;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.core.HazelcastInstance;
-import io.airlift.airline.Cli;
-import io.airlift.airline.Command;
-import io.airlift.airline.Help;
-import io.airlift.airline.Option;
+import com.hazelcast.commands.CommandFactory;
+import picocli.CommandLine;
 
 import java.util.Scanner;
 
 public class HazelcastTerminal {
-    private static HazelcastInstance client =
-            HazelcastClient.getOrCreateHazelcastClient(
-                    new ClientConfig()
-                            .setClusterName("Cluster-1")
-                            .setInstanceName("192.168.0.5:5701"));
-
     public static void main(String[] args) {
-        String namespace = "default";
-        boolean running = true;
         Scanner scanner = new Scanner(System.in);
-        Cli.CliBuilder<Runnable> builder = Cli.<Runnable>builder("hazelcast console")
-                .withDescription("the stupid content tracker")
-                .withDefaultCommand(Help.class)
-                .withCommands(Help.class, CreateNamespaceCommand.class);
-
-        Cli<Runnable> gitParser = builder.build();
-
-        gitParser.parse(args).run();
-        while (running) {
-            System.out.print("hazelcast[" + namespace + "] > ");
+        CommandFactory factory = CommandFactory.exitAllowed(new CliClientProvider());
+        for (;;) {
             try {
-                final String command = scanner.nextLine();
-                gitParser.parse(command.split("\\s+")).run();
-                System.out.println("You entered: [" + command + "]");
+                System.out.print(factory.output());
+                final String userEnteredLine = scanner.nextLine();
+                String[] tokens = userEnteredLine.split("\\s+");
+                final String command = tokens[0];
+                final String[] arguments = new String[tokens.length - 1];
+                System.arraycopy(tokens, 1, arguments, 0, arguments.length);
+                new CommandLine(factory.lookupCommand(command), factory).execute(arguments);
             } catch (Throwable e) {
                 e.printStackTrace();
-            }
-        }
-    }
-
-    @Command(name = "ns", description = "creates specified data structure on hazelcast cluster")
-    public static class CreateNamespaceCommand implements Runnable {
-        @Option(name = "-n", description = "name of data structure")
-        public String name;
-        @Option(name = "-t", description = "type of data structure")
-        public String type;
-
-        @Override
-        public void run() {
-            if ("map".equals(type)) {
-                client.getMap(name);
-            } else {
-                System.out.println("do nothing");
             }
         }
     }
