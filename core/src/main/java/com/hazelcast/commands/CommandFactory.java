@@ -42,8 +42,7 @@ public final class CommandFactory
         return commands.get(name);
     }
 
-    public String output() {
-        return context.toString();
+    public Context currentContext() {
+        return context;
     }
-
 }

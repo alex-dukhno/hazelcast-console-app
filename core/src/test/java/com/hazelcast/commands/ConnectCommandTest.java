@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +19,7 @@ public class ConnectCommandTest {
     @Test
     void notConnectedPrompt() {
         CommandFactory factory = new CommandFactory(provider, new Context());
-        assertThat(factory.output()).isEqualTo("[not connected]> ");
+        assertThat(factory.currentContext().toString()).isEqualTo("[not connected]> ");
     }
 
     @Test
@@ -28,7 +27,7 @@ public class ConnectCommandTest {
             throws Exception {
         CommandFactory factory = new CommandFactory(provider, new Context());
         new CommandLine(factory.lookupCommand("connect"), factory).execute("cluster", "member");
-        assertThat(factory.output()).isEqualTo("[cluster@member]> ");
+        assertThat(factory.currentContext().toString()).isEqualTo("[cluster@member]> ");
     }
 
     @Test
@@ -37,7 +36,7 @@ public class ConnectCommandTest {
 
         CommandFactory factory = new CommandFactory(provider, new Context());
         new CommandLine(factory.lookupCommand("connect"), factory).execute("cluster", "member");
-        assertThat(factory.output()).isEqualTo("Could not connect to [cluster] [member]\n"
+        assertThat(factory.currentContext().toString()).isEqualTo("Could not connect to [cluster] [member]\n"
                 + "[not connected]> ");
     }
 }

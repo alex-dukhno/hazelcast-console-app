@@ -26,7 +26,7 @@ public class CreateNamespaceCommandTest {
         CommandFactory factory = new CommandFactory(provider, new Context());
         new CommandLine(factory.lookupCommand("connect"), factory).execute("cluster", "member");
         new CommandLine(factory.lookupCommand("ns"), factory).execute("myMap", "map");
-        assertThat(factory.output()).isEqualTo("[cluster@member]/maps/myMap> ");
+        assertThat(factory.currentContext().toString()).isEqualTo("[cluster@member]/maps/myMap> ");
     }
 
     @Test
@@ -34,7 +34,7 @@ public class CreateNamespaceCommandTest {
         when(provider.get(any(), any())).thenReturn(null);
         CommandFactory factory = new CommandFactory(provider, new Context());
         new CommandLine(factory.lookupCommand("ns"), factory).execute("myMap", "map");
-        assertThat(factory.output()).isEqualTo("You have to connect to a member in a cluster before creating namespace\n"
+        assertThat(factory.currentContext().toString()).isEqualTo("You have to connect to a member in a cluster before creating namespace\n"
                 + "[not connected]> ");
     }
 }

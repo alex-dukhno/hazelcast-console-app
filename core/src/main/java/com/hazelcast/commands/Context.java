@@ -23,6 +23,18 @@ public final class Context {
         return member;
     }
 
+    public DataStructureType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getError() {
+        return error;
+    }
+
     public String message() {
         if (error != null) {
             return error;
